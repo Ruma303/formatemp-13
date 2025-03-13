@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Scanner;
 
 /**
  * TODO: Aggiungere data di nascita agli studenti
@@ -13,25 +17,33 @@ import java.sql.SQLException;
 public class Students {
 
 	public static void all() {
-		if (Students.isEmpty()) {
-			System.out.println("La tabella studenti è vuota");
-			return;
-		}
-		String query = "SELECT * FROM studenti";
+	    if (isEmpty()) {
+	        System.out.println("La tabella studenti è vuota");
+	        return;
+	    }
+	    String query = "SELECT * FROM studenti";
 
-		try (Connection conn = JDBC.getConnection();
-				PreparedStatement pstmt = conn.prepareStatement(query);
-				ResultSet rs = pstmt.executeQuery()) {
+	    try (Connection conn = JDBC.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(query);
+	         ResultSet rs = pstmt.executeQuery()) {
 
-			while (rs.next()) {
-				System.out.println("ID: " + rs.getInt("id_studente") + ", Nome: " + rs.getString("nome") + ", Cognome: "
-						+ rs.getString("cognome") + ", Età: " + rs.getInt("eta") + ", ID Corso: "
-						+ rs.getInt("id_corso"));
-			}
+	        DateTimeFormatter italianFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-		} catch (SQLException e) {
-			System.err.println("❌ Errore SQL: " + e.getMessage());
-		}
+	        while (rs.next()) {
+	            LocalDate date = rs.getDate("data_nascita") != null ? rs.getDate("data_nascita").toLocalDate() : null;
+	            String formattedDate = (date != null) ? date.format(italianFormat) : "N/A";
+
+	            System.out.println("ID: " + rs.getInt("id_studente") +
+	                               ", Nome: " + rs.getString("nome") +
+	                               ", Cognome: " + rs.getString("cognome") +
+	                               ", Età: " + rs.getInt("eta") +
+	                               ", Data di Nascita: " + formattedDate +
+	                               ", ID Corso: " + rs.getInt("id_corso"));
+	        }
+
+	    } catch (SQLException e) {
+	        System.err.println("❌ Errore SQL: " + e.getMessage());
+	    }
 	}
 
 	public static void get(int id) {
@@ -84,82 +96,87 @@ public class Students {
 		}
 	}
 
-	public static void add(String nome, String cognome, int eta, int id_corso) {
-		// Aggiungere data di nascita
-		String query = "INSERT INTO studenti (nome, cognome, eta, id_corso) VALUES (?, ?, ?, ?)";
+	public static void add(String nome, String cognome, int eta, String dateIT, int id_corso) {
+		String dateISO = convertDateToISO(dateIT);
+        if (dateISO == null) return; // Se la data è errata, interrompe
+	    String query = "INSERT INTO studenti (nome, cognome, eta, data_nascita, id_corso) VALUES (?, ?, ?, ?, ?)";
 
-		try (Connection conn = JDBC.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+	    try (Connection conn = JDBC.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+	        pstmt.setString(1, nome);
+	        pstmt.setString(2, cognome);
+	        pstmt.setInt(3, eta);
+	        pstmt.setString(4, dateISO); // Conversione formato data
+	        pstmt.setInt(5, id_corso);
 
-			pstmt.setString(1, nome);
-			pstmt.setString(2, cognome);
-			pstmt.setInt(3, eta);
-			pstmt.setInt(4, id_corso);
+	        int rowsAffected = pstmt.executeUpdate();
+	        System.out.println("✅ Studente aggiunto in fondo alla lista.");
 
-			int rowsAffected = pstmt.executeUpdate();
-			System.out.println("✅ Studente aggiunto in fondo alla lista.");
-
-		} catch (SQLException e) {
-			System.err.println("❌ Errore SQL: " + e.getMessage());
-		}
+	    } catch (SQLException e) {
+	        System.err.println("❌ Errore SQL: " + e.getMessage());
+	    }
 	}
 
-	public static void add(int id_studente, String nome, String cognome, int eta, int id_corso, boolean append) {
+	public static void add(int id_studente, String nome, String cognome, int eta, String dateIT, int id_corso, boolean append) {
+		String dateISO = convertDateToISO(dateIT);
+        if (dateISO == null) return; // Se la data è errata, interrompe
 		if (exists(id_studente)) {
-			if (append) {
-				System.out.println("⚠️ Esiste già uno studente con ID " + id_studente + ". Verrà aggiunto in fondo.");
-				add(nome, cognome, eta, id_corso); // Aggiunge senza specificare ID
-				return;
-			} else {
-				System.out.println("⚠️ Esiste già uno studente in questa posizione. Operazione annullata.");
-				return;
-			}
-		}
+	        if (append) {
+	            System.out.println("⚠️ Esiste già uno studente con ID " + id_studente + ". Verrà aggiunto in fondo.");
+	            add(nome, cognome, eta, dateIT, id_corso); // Aggiunge senza specificare ID
+	            return;
+	        } else {
+	            System.out.println("⚠️ Esiste già uno studente in questa posizione. Operazione annullata.");
+	            return;
+	        }
+	    }
 
-		// Aggiungere data di nascita
-		String query = "INSERT INTO studenti (id_studente, nome, cognome, eta, id_corso) VALUES (?, ?, ?, ?, ?)";
+	    String query = "INSERT INTO studenti (id_studente, nome, cognome, eta, data_nascita, id_corso) VALUES (?, ?, ?, ?, ?, ?)";
 
-		try (Connection conn = JDBC.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+	    try (Connection conn = JDBC.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+	        pstmt.setInt(1, id_studente);
+	        pstmt.setString(2, nome);
+	        pstmt.setString(3, cognome);
+	        pstmt.setInt(4, eta);
+	        pstmt.setString(5, dateISO);
+	        pstmt.setInt(6, id_corso);
 
-			pstmt.setInt(1, id_studente);
-			pstmt.setString(2, nome);
-			pstmt.setString(3, cognome);
-			pstmt.setInt(4, eta);
-			pstmt.setInt(5, id_corso);
+	        int rowsAffected = pstmt.executeUpdate();
+	        System.out.println("✅ Studente inserito nella posizione specificata.");
 
-			int rowsAffected = pstmt.executeUpdate();
-			System.out.println("✅ Studente inserito nella posizione specificata.");
-
-		} catch (SQLException e) {
-			System.err.println("❌ Errore SQL: " + e.getMessage());
-		}
+	    } catch (SQLException e) {
+	        System.err.println("❌ Errore SQL: " + e.getMessage());
+	    }
 	}
 
-	public static void update(int id, String nome, String cognome, int eta, int id_corso) {
-		if (Students.isEmpty()) {
-			System.out.println("La tabella studenti è vuota");
-			return;
-		}
-		// Aggiungere data di nascita
-		String query = "UPDATE studenti SET nome = ?, cognome = ?, eta = ?, id_corso = ? WHERE id_studente = ?";
+	public static void update(int id, String nome, String cognome, int eta, String dateIT, int id_corso) {
+	    String dateISO = convertDateToISO(dateIT);
+	    if (dateISO == null) return; // Se la data è errata, interrompe
+	    
+	    if (isEmpty()) {
+	        System.out.println("La tabella studenti è vuota");
+	        return;
+	    }
 
-		try (Connection conn = JDBC.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+	    String query = "UPDATE studenti SET nome = ?, cognome = ?, eta = ?, data_nascita = ?, id_corso = ? WHERE id_studente = ?";
 
-			pstmt.setString(1, nome);
-			pstmt.setString(2, cognome);
-			pstmt.setInt(3, eta);
-			pstmt.setInt(4, id_corso);
-			pstmt.setInt(5, id);
+	    try (Connection conn = JDBC.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+	        pstmt.setString(1, nome);
+	        pstmt.setString(2, cognome);
+	        pstmt.setInt(3, eta);
+	        pstmt.setString(4, dateISO); 
+	        pstmt.setInt(5, id_corso);
+	        pstmt.setInt(6, id);
 
-			int rowsAffected = pstmt.executeUpdate();
-			if (rowsAffected > 0) {
-				System.out.println("✅ Studente aggiornato con successo.");
-			} else {
-				System.out.println("⚠️ Nessuno studente trovato con ID: " + id);
-			}
+	        int rowsAffected = pstmt.executeUpdate();
+	        if (rowsAffected > 0) {
+	            System.out.println("✅ Studente aggiornato con successo.");
+	        } else {
+	            System.out.println("⚠️ Nessuno studente trovato con ID: " + id);
+	        }
 
-		} catch (SQLException e) {
-			System.err.println("❌ Errore SQL: " + e.getMessage());
-		}
+	    } catch (SQLException e) {
+	        System.err.println("❌ Errore SQL: " + e.getMessage());
+	    }
 	}
 
 	public static void delete(int id) {
@@ -262,4 +279,21 @@ public class Students {
 	    }
 	    return false;
 	}
-}
+	
+	public static String convertDateToISO(String dateIT) {
+	    Scanner scanner = new Scanner(System.in);
+	    
+	    while (true) {
+	        try {
+	            DateTimeFormatter italianFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	            DateTimeFormatter isoFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	            LocalDate date = LocalDate.parse(dateIT, italianFormat);
+	            return date.format(isoFormat);
+	        } catch (DateTimeParseException e) {
+	            System.err.println("❌ Errore: Formato data non valido. Usa il formato gg/mm/aaaa.");
+	            System.out.print("Inserisci nuovamente la data: ");
+	            dateIT = scanner.nextLine();
+	        }
+	    }
+	}
+ }

@@ -1,5 +1,8 @@
 package App;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import Database.Students;
 
@@ -87,23 +90,26 @@ public class Main {
 	}
 
 	public static void createStudent() {
-		System.out.println("Creazione studente...");
+	    System.out.println("Creazione studente...");
 
-		System.out.print("Inserisci nome: ");
-		String name = sc.nextLine();
+	    System.out.print("Inserisci nome: ");
+	    String name = sc.nextLine();
 
-		System.out.print("Inserisci cognome: ");
-		String lastname = sc.nextLine();
+	    System.out.print("Inserisci cognome: ");
+	    String lastname = sc.nextLine();
 
-		System.out.print("Inserisci età: ");
-		Integer eta = sc.nextInt();
-		sc.nextLine();
+	    System.out.print("Inserisci età: ");
+	    int eta = sc.nextInt();
+	    sc.nextLine(); 
 
-		System.out.print("Aggiungi corso (id_corso): ");
-		Integer course = sc.nextInt();
-		sc.nextLine();
+	    System.out.print("Inserisci data di nascita (gg/mm/aaaa): ");
+	    String dateIT = sc.nextLine();
 
-		Students.add(name, lastname, eta, course);
+	    System.out.print("Aggiungi corso (id_corso): ");
+	    int course = sc.nextInt();
+	    sc.nextLine();
+
+	    Students.add(name, lastname, eta, dateIT, course);
 	}
 
 	// Inserimento in posizione specifica
@@ -112,7 +118,7 @@ public class Main {
 
 	    System.out.print("Inserisci posizione (ID studente): ");
 	    int id = sc.nextInt();
-	    sc.nextLine(); 
+	    sc.nextLine();
 
 	    if (Students.exists(id)) {
 	        System.out.print("⚠️ Esiste già uno studente con ID " + id + ". Vuoi aggiungerlo in fondo? (sì/no): ");
@@ -134,14 +140,17 @@ public class Main {
 	    int eta = sc.nextInt();
 	    sc.nextLine();
 
+	    System.out.print("Inserisci data di nascita (gg/mm/aaaa): ");
+	    String dateIT = sc.nextLine();
+
 	    System.out.print("Aggiungi corso (id_corso): ");
 	    int course = sc.nextInt();
 	    sc.nextLine();
 
 	    if (Students.exists(id)) {
-	        Students.add(name, lastname, eta, course); // Aggiunge in fondo
+	        Students.add(name, lastname, eta, dateIT, course); // Aggiunge in fondo
 	    } else {
-	        Students.add(id, name, lastname, eta, course, false); // Aggiunge nella posizione specificata
+	        Students.add(id, name, lastname, eta, dateIT, course, false); // Aggiunge nella posizione specificata
 	    }
 	}
 
@@ -168,11 +177,14 @@ public class Main {
 	    int eta = sc.nextInt();
 	    sc.nextLine();
 
+	    System.out.print("Inserisci data di nascita (gg/mm/aaaa): ");
+	    String dateIT = sc.nextLine();
+
 	    System.out.print("Aggiungi corso (id_corso): ");
 	    int course = sc.nextInt();
 	    sc.nextLine();
 
-	    Students.update(id, name, lastname, eta, course);
+	    Students.update(id, name, lastname, eta, dateIT, course);
 	}
 	
 	// Elimina studente
