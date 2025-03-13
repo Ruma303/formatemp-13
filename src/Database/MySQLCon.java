@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 // Esempio classe di connessione basilare e non ottimizzata
+// La classe di connessione si trova in Database.JDBC
 
 public class MySQLCon {
 

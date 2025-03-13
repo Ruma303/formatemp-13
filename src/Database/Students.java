@@ -10,7 +10,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
- * TODO: Aggiungere data di nascita agli studenti
  * TODO: Recuperare nome corso usando le join 
  */
 
