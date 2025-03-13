@@ -1,8 +1,10 @@
-package lezione_13;
+package Database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+// Esempio classe di connessione basilare e non ottimizzata
 
 public class MySQLCon {
 
