@@ -10,7 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
- * TODO: Recuperare nome corso usando le join 
+ * TODO: Recuperare nome corso usando le join
  */
 
 public class Students {
