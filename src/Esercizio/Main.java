@@ -6,18 +6,6 @@ public class Main {
 
 		MySQL db = new MySQL("127.0.0.1", "3306", "formatemp_scuoladb", "root", "");
 
-		// Debugs
-//		System.out.println(db.isConnected());
-
-		// Queries
-//		boolean studentsExists = db.SelectQuery("SELECT * FROM studenti");
-//		System.out.println(studentsExists);
-//
-//		if (studentsExists) {
-//			System.out.println(db.first());
-//			System.out.println(db.getString("eta"));
-//		}
-
 		int scelta;
 		do {
 			System.out.println("1. Aggiungi studente");
@@ -61,38 +49,16 @@ public class Main {
 			case 2:
 				if (db.SelectQuery("SELECT * FROM studenti")) {
 					while (db.next()) {
-						System.out.println(db.getString("id_studente") + " - " + db.getString("nome") + " "
-								+ db.getString("cognome") + " " + db.getString("eta") + " "
-								+ Date.convertISOToDate(db.getString("data_nascita")) + " " + db.getString("id_corso"));
+						System.out.println(db.getString("id_studente") + 
+								" - " + db.getString("nome") + 
+								" " + db.getString("cognome") + " " + db.getString("eta") 
+								+ " " + Date.convertISOToDate(db.getString("data_nascita")) 
+								+ " " + db.getString("id_corso"));
 					}
 				}
 				break;
-
 			}
-
 		} while (scelta != 3);
 		System.out.println("Arrivederci");
 	}
 }
-
-/*
- * Flavia +-------------+-------------+------+-----+---------+----------------+
- * | Field | Type | Null | Key | Default | Extra |
- * +-------------+-------------+------+-----+---------+----------------+ |
- * id_studente | int(11) | NO | PRI | NULL | auto_increment | | nome |
- * varchar(50) | NO | | NULL | | | cognome | varchar(50) | NO | | NULL | | | eta
- * | int(11) | YES | | NULL | | | id_corso | int(11) | YES | MUL | NULL | |
- * +-------------+-------------+------+-----+---------+----------------+
- */
-
-/*
- * Emiliano
- * +--------------+--------------+------+-----+---------+----------------+ |
- * Field | Type | Null | Key | Default | Extra |
- * +--------------+--------------+------+-----+---------+----------------+ | id
- * | bigint(255) | NO | PRI | NULL | auto_increment | | nome | varchar(255) |
- * YES | | NULL | | | cognome | varchar(255) | YES | | NULL | | | data_nascita |
- * date | YES | | NULL | | | classe | varchar(255) | YES | | NULL | | | email |
- * varchar(255) | YES | | NULL | |
- * +--------------+--------------+------+-----+---------+----------------+
- */

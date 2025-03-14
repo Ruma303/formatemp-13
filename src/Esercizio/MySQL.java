@@ -98,9 +98,11 @@ public class MySQL {
 		return dbConn;
 	}
 
-	// Distinguiamo ora le query semplici fatte con statement da quelle con PreparedStatement
-	
-	// per esempio SelectQuery la useremo per la semplice query di select fatta con Statement
+	// Distinguiamo ora le query semplici fatte con statement da quelle con
+	// PreparedStatement
+
+	// per esempio SelectQuery la useremo per la semplice query di select fatta con
+	// Statement
 	// e SelectProtectedQuery per la query di select fatta con PreparedStatement
 
 	public boolean SelectQuery(String query) {
@@ -115,7 +117,6 @@ public class MySQL {
 			return false;
 		}
 	}
-	
 
 	// Grazie alle prepareStatement, il metodo SelectProtectedQuery è protetto
 	// dalla SQL Injection
@@ -244,8 +245,6 @@ public class MySQL {
 			return null;
 		}
 	}
-	
-
 
 	public boolean next() {
 		this.ClearErrorString();
@@ -253,7 +252,7 @@ public class MySQL {
 			this.errorString = "ResultSet non inizializzato";
 			return false;
 		}
- 
+
 		try {
 			return this.rs.next();
 		} catch (SQLException e) {
@@ -261,14 +260,14 @@ public class MySQL {
 			return false;
 		}
 	}
- 
+
 	public boolean last() {
 		this.ClearErrorString();
 		if (this.rs == null) {
 			this.errorString = "ResultSet non inizializzato";
 			return false;
 		}
- 
+
 		try {
 			return this.rs.last();
 		} catch (SQLException e) {
@@ -276,14 +275,14 @@ public class MySQL {
 			return false;
 		}
 	}
- 
+
 	public boolean previous() {
 		this.ClearErrorString();
 		if (this.rs == null) {
 			this.errorString = "ResultSet non inizializzato";
 			return false;
 		}
- 
+
 		try {
 			return this.rs.previous();
 		} catch (SQLException e) {
@@ -291,15 +290,16 @@ public class MySQL {
 			return false;
 		}
 	}
- 
-	public boolean absolute(int row) //posizionati nella tabella dopo la query di select, ammesso che la select lo permetta, alla riga row
-	{  
+
+	public boolean absolute(int row) // posizionati nella tabella dopo la query di select, ammesso che la select lo
+										// permetta, alla riga row
+	{
 		this.ClearErrorString();
 		if (this.rs == null) {
 			this.errorString = "ResultSet non inizializzato";
 			return false;
 		}
- 
+
 		try {
 			return this.rs.absolute(row);
 		} catch (SQLException e) {
@@ -307,14 +307,13 @@ public class MySQL {
 			return false;
 		}
 	}
- 
+
 	public boolean seek(int row) // solo perchè mi piace di più
 	{
 		return absolute(row);
 	}
- 
-	public boolean updateQuery(String Query)
-	{
+
+	public boolean updateQuery(String Query) {
 		this.ClearErrorString();
 		try {
 			this.stmt = this.dbConn.createStatement();
@@ -324,9 +323,9 @@ public class MySQL {
 			this.errorString = e.getMessage();
 			return false;
 		}
- 
+
 	}
- 
+
 	public boolean updateProtectedQuery(String Query, String[] values) {
 		this.ClearErrorString();
 		try {
@@ -341,8 +340,7 @@ public class MySQL {
 			return false;
 		}
 	}
- 
- 
+
 	public boolean InsertProtectedQuery(String Query, String[] values) {
 		this.ClearErrorString();
 		this.resetDataPrequery();
@@ -352,7 +350,7 @@ public class MySQL {
 				this.pstmt.setString(i + 1, values[i]);
 			}
 			this.pstmt.executeUpdate();
- 
+
 			ResultSet rs = this.pstmt.getGeneratedKeys();
 			if (rs.next()) {
 				this.lastInsertId = rs.getInt(1);
@@ -362,23 +360,20 @@ public class MySQL {
 			this.errorString = e.getMessage();
 			return false;
 		}
- 
- 
 	}
- 
-	public boolean InsertQuery(String query)
-	{
+
+	public boolean InsertQuery(String query) {
 		return this.InsertProtectedQuery(query, new String[] {});
 	}
- 
+
 	private void resetDataPrequery() {
-        this.lastInsertId = null;
-    }
- 
+		this.lastInsertId = null;
+	}
+
 	public Integer getLastInsertId() {
 		return this.lastInsertId;
 	}
- 
+
 	public boolean DeleteQuery(String query) {
 		this.ClearErrorString();
 		try {
@@ -390,7 +385,7 @@ public class MySQL {
 			return false;
 		}
 	}
- 
+
 	public boolean DeleteProtectedQuery(String query, String[] values) {
 		this.ClearErrorString();
 		try {
@@ -404,8 +399,8 @@ public class MySQL {
 			this.errorString = e.getMessage();
 			return false;
 		}
-	}	
-	
+	}
+
 	public String getDbhost() {
 		return dbhost;
 	}
