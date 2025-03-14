@@ -3,10 +3,11 @@ package Esercizio;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Scanner;
 
 public class Date {
 	public static String convertDateToISO(String dateIT) {
-
+		Scanner sc = new Scanner(System.in);
 		while (true) {
 			try {
 				DateTimeFormatter italianFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -16,6 +17,7 @@ public class Date {
 			} catch (DateTimeParseException e) {
 				System.err.println("❌ Errore: Formato data non valido. Usa il formato gg/mm/aaaa.");
 				System.out.print("Inserisci nuovamente la data: ");
+				sc.nextLine();
 				return "";
 			}
 		}

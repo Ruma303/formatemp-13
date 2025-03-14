@@ -404,22 +404,7 @@ public class MySQL {
 			this.errorString = e.getMessage();
 			return false;
 		}
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}	
 	
 	public String getDbhost() {
 		return dbhost;
@@ -473,5 +458,4 @@ public class MySQL {
 	public String toString() {
 		return "Connesso al database: " + dbname;
 	}
-	
 }
